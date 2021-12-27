@@ -3,35 +3,22 @@ import { Grid } from './control/Grid';
 import { CanvasView } from './components/CanvasView';
 import { SettingsView } from './components/SettingsView';
 import { AstarRun } from './control/Algorithm';
-import { useRef, useState } from 'react';
-import { AlgorithmMode, RenderMode } from './utils/types';
+import { useRef } from 'react';
+import { AlgorithmMode } from './utils/types';
 import css from './App.module.css';
-
-export type AppState = {
-    algorithm: AlgorithmMode;
-    diagonals: boolean;
-    renderMode: RenderMode;
-    alerts: boolean;
-};
 
 export const App: React.FC = () => {
     const interval = useRef<NodeJS.Timer | undefined>(undefined);
     const grid = useRef<Grid>(new Grid());
-    const [state, setState] = useState<AppState>({
-        algorithm: 0,
-        diagonals: true,
-        renderMode: RenderMode.Square,
-        alerts: true,
-    });
 
     const onDijkstraRun = (): void => {
         // TODO add
     };
 
     const onRun = (): void => {
-        switch (state.algorithm) {
+        switch (grid.current.state.algorithm) {
             case AlgorithmMode.Astar:
-                AstarRun(grid.current, state, onFinish);
+                AstarRun(grid.current, onFinish);
                 break;
             case AlgorithmMode.Dijkstra:
                 onDijkstraRun();
@@ -47,7 +34,7 @@ export const App: React.FC = () => {
 
     const onBegin = (): void => {
         if (grid.current.state.finished) {
-            grid.current.resetGrid(false, state.diagonals, state.renderMode);
+            grid.current.resetGrid(false);
         }
 
         if (grid.current.state.ready) {
@@ -61,7 +48,7 @@ export const App: React.FC = () => {
     return (
         <div className={css.container}>
             <CanvasView />
-            <SettingsView grid={grid.current} appState={state} setAppState={setState} onBegin={onBegin} />
+            <SettingsView grid={grid.current} onBegin={onBegin} />
         </div>
     );
 };

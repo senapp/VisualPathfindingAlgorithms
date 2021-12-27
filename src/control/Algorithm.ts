@@ -1,9 +1,8 @@
-import { AppState } from '../App';
 import { Grid } from './Grid';
 import { heuristic, removeElementArray } from '../utils/funcs';
 import { RenderGrid } from './Rendering';
 
-export const AstarRun = (grid: Grid, appState: AppState, onFinish: () => void): void => {
+export const AstarRun = (grid: Grid, onFinish: () => void): void => {
     if (!grid.state.cleared && !grid.state.running) {
         return;
     }
@@ -22,7 +21,7 @@ export const AstarRun = (grid: Grid, appState: AppState, onFinish: () => void): 
             grid.state.t1 = performance.now();
             grid.state.finished = true;
             grid.state.running = false;
-            if (appState.alerts) {
+            if (grid.state.alerts) {
                 alert(`Path found in: ${grid.state.t1 - grid.state.t0} ms`);
             }
 
@@ -66,12 +65,12 @@ export const AstarRun = (grid: Grid, appState: AppState, onFinish: () => void): 
         grid.state.finished = true;
         grid.state.running = false;
 
-        if (appState.alerts) {
+        if (grid.state.alerts) {
             alert(`No solution found in: ${grid.state.t1 - grid.state.t0} ms`);
         }
 
         onFinish();
     }
 
-    RenderGrid(grid, appState.renderMode);
+    RenderGrid(grid);
 };

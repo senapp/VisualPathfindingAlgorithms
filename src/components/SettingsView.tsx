@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { AppState } from '../App';
 import { Grid } from '../control/Grid';
 import { ClearGrid } from '../control/Rendering';
 import { AlgorithmMode, RenderMode } from '../utils/types';
@@ -11,8 +10,6 @@ import css from './SettingsView.module.css';
 
 type Props = {
     grid: Grid;
-    appState: AppState;
-    setAppState: React.Dispatch<React.SetStateAction<AppState>>;
     onBegin: () => void;
 }
 
@@ -20,46 +17,59 @@ type State = {
     canvasSize: number;
     wallModifier: number;
     colsAndRows: number;
+    grid: Grid;
 }
 
-export const SettingsView: React.FC<Props> = ({ grid, appState, setAppState, onBegin }) => {
+export const SettingsView: React.FC<Props> = ({ grid, onBegin }) => {
+    const { diagonals, renderMode, algorithm, alerts } = grid.state;
     const [state, setState] = useState<State>({
         canvasSize: 500,
         wallModifier: 0.3,
         colsAndRows: 25,
+        grid: grid,
     });
 
     useEffect(() => {
         onGridChange(state.colsAndRows);
     }, []);
 
-    const { diagonals, renderMode, algorithm, alerts } = appState;
+    useEffect(() => {
+        setState((state) => ({ ...state, grid: grid }));
+    }, [grid]);
+
+    const updateGrid = (): void => {
+        setState((state) => ({ ...state, grid: grid }));
+    };
 
     const setStartPosX = (value: number): void => {
         if (grid.cells.length > 0) {
             grid.start = grid.cells[value][grid.start.y];
-            grid.resetGrid(false, diagonals, renderMode);
+            grid.resetGrid(false);
+            updateGrid();
         }
     };
 
     const setStartPosY = (value: number): void => {
         if (grid.cells.length > 0) {
             grid.start = grid.cells[grid.start.x][value];
-            grid.resetGrid(false, diagonals, renderMode);
+            grid.resetGrid(false);
+            updateGrid();
         }
     };
 
     const setEndPosX = (value: number): void =>{
         if (grid.cells.length > 0) {
             grid.end = grid.cells[value][grid.end.y];
-            grid.resetGrid(false, diagonals, renderMode);
+            grid.resetGrid(false);
+            updateGrid();
         }
     };
 
     const setEndPosY = (value: number): void => {
         if (grid.cells.length > 0) {
             grid.end = grid.cells[grid.end.x][value];
-            grid.resetGrid(false, diagonals, renderMode);
+            grid.resetGrid(false);
+            updateGrid();
         }
     };
 
@@ -69,45 +79,43 @@ export const SettingsView: React.FC<Props> = ({ grid, appState, setAppState, onB
 
     const onGridChange = (value: number): void => {
         setState((state) => ({ ...state, colsAndRows: value }));
-        grid.createGrid(state.colsAndRows, state.colsAndRows, state.wallModifier, diagonals, renderMode);
+        grid.createGrid(value, value, state.wallModifier);
         grid.state = ({ ...grid.state, ready: true, finished: false });
+        updateGrid();
     };
 
     const setCanvasSize = (value: number): void => {
         setState((state) => ({ ...state, canvasSize: value }));
         grid.resizeCanvas(value);
-        ClearGrid(grid, renderMode);
+        ClearGrid(grid);
+        updateGrid();
     };
 
     const setRenderMode = (value: RenderMode): void => {
-        const canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
-        if (canvas) {
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-        }
-
-        grid.resetGrid(true, diagonals, value);
-        setAppState((state) => ({ ...state, renderMode: value, t0: 0 }));
-        grid.state = ({ ...grid.state, t0: 0 });
+        grid.state = ({ ...grid.state, renderMode: value });
+        grid.resetGrid(true);
+        updateGrid();
     };
 
     const setAlgorithm = (value: number): void => {
-        setAppState((state) => ({ ...state, algorithm: value }));
+        grid.state = ({ ...grid.state, algorithm: value });
+        updateGrid();
     };
 
     const setDiagonals = (value: boolean): void => {
-        grid.recalculateCells(value);
-        setAppState((state) => ({ ...state, diagonals: value }));
+        grid.state = ({ ...grid.state, diagonals: value });
+        grid.recalculateCells();
+        updateGrid();
     };
 
     const setAlerts = (value: boolean): void => {
-        setAppState((state) => ({ ...state, alerts: value }));
+        grid.state = ({ ...grid.state, alerts: value });
+        updateGrid();
     };
 
     const onClear = (): void => {
-        grid.resetGrid(false, diagonals, renderMode);
+        grid.resetGrid(false);
+        updateGrid();
     };
 
     return (
@@ -191,15 +199,15 @@ export const SettingsView: React.FC<Props> = ({ grid, appState, setAppState, onB
                     <NumberInput
                         label="Start Position X"
                         min={0}
-                        max={state.colsAndRows}
-                        value={grid.start.y}
+                        max={state.colsAndRows - 1}
+                        value={grid.start.x}
                         onChange={setStartPosX}
                     />
                     <NumberInput
                         label="Start Position Y"
                         min={0}
-                        max={state.colsAndRows}
-                        value={grid.start.x}
+                        max={state.colsAndRows - 1}
+                        value={grid.start.y}
                         onChange={setStartPosY}
                     />
                 </div>
@@ -208,14 +216,14 @@ export const SettingsView: React.FC<Props> = ({ grid, appState, setAppState, onB
                         label="End Position X"
                         min={0}
                         max={state.colsAndRows - 1}
-                        value={grid.end.y}
+                        value={grid.end.x}
                         onChange={setEndPosX}
                     />
                     <NumberInput
                         label="End Position Y"
                         min={0}
                         max={state.colsAndRows - 1}
-                        value={grid.end.x}
+                        value={grid.end.y}
                         onChange={setEndPosY}
                     />
                 </div>

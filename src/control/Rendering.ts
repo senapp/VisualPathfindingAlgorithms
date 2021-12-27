@@ -16,58 +16,62 @@ export const GetCanvas = (): CanvasContext => {
     return { ctx: ctx, canvas: canvas };
 };
 
-export const ClearGrid = (grid: Grid, renderMode: RenderMode): void => {
+export const ClearGrid = (grid: Grid): void => {
+    const { renderMode } = grid.state;
     const { ctx, canvas } = GetCanvas();
     if (!ctx || !canvas) {
         return;
     }
-
-    const args = { renderMode: renderMode, w: grid.w, h: grid.h, ctx: ctx } as ShowProps;
 
     ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 
-    grid.cells.forEach(cellCol => {
-        cellCol.forEach(cell => {
-            if (cell === grid.start || cell === grid.end) {
-                Show(cell, 'yellow', args);
-            } else if (cell.wall) {
-                Show(cell, 'black', args);
-            } else if (grid.path.includes(cell)) {
-                Show(cell, 'blue', args);
-            } else if (grid.openset.includes(cell)) {
-                Show(cell, 'green', args);
-            } else if (grid.closedset.includes(cell)) {
-                Show(cell, 'red', args);
-            } else {
-                Show(cell, 'white', args);
-            }
+    if (renderMode !== RenderMode.None) {
+        grid.cells.forEach(cellCol => {
+            cellCol.forEach(cell => {
+                if (renderMode !== RenderMode.Line) {
+                    if (cell === grid.start || cell === grid.end) {
+                        Show(cell, 'yellow', grid, ctx);
+                    } else if (cell.wall) {
+                        Show(cell, 'black', grid, ctx);
+                    } else if (grid.path.includes(cell)) {
+                        Show(cell, 'blue', grid, ctx);
+                    } else if (grid.openset.includes(cell)) {
+                        Show(cell, 'green', grid, ctx);
+                    } else if (grid.closedset.includes(cell)) {
+                        Show(cell, 'red', grid, ctx);
+                    } else {
+                        Show(cell, 'white', grid, ctx);
+                    }
+                } else if (cell.wall) {
+                    Show(cell, 'black', grid, ctx);
+                }
+            });
         });
-    });
 
-    if (renderMode === RenderMode.Line) {
-        ShowLinePath(ctx, grid);
+        if (renderMode === RenderMode.Line) {
+            ShowLinePath(ctx, grid);
+        }
     }
 };
 
-export const RenderGrid = (grid: Grid, renderMode: RenderMode): void => {
+export const RenderGrid = (grid: Grid): void => {
+    const { renderMode } = grid.state;
     const { ctx, canvas } = GetCanvas();
-    if (!ctx || !canvas) {
+    if (!ctx || !canvas || renderMode === RenderMode.None) {
         return;
     }
 
-    const args = { renderMode: renderMode, w: grid.w, h: grid.h, ctx: ctx } as ShowProps;
-
     if (renderMode !== RenderMode.Line) {
         grid.closedset.forEach(cell => {
-            Show(cell, 'red', args);
+            Show(cell, 'red', grid, ctx);
         });
 
         grid.openset.forEach(cell => {
-            Show(cell, 'green', args);
+            Show(cell, 'green', grid, ctx);
         });
 
         grid.path.forEach(cell => {
-            Show(cell, 'blue', args);
+            Show(cell, 'blue', grid, ctx);
         });
     } else {
         ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
@@ -75,7 +79,7 @@ export const RenderGrid = (grid: Grid, renderMode: RenderMode): void => {
         grid.cells.forEach(cellCol => {
             cellCol.forEach(cell => {
                 if (cell.wall) {
-                    Show(cell, 'black', args);
+                    Show(cell, 'black', grid, ctx);
                 }
             });
         });
@@ -96,15 +100,10 @@ const ShowLinePath = (ctx: CanvasRenderingContext2D, grid: Grid): void => {
     ctx.stroke();
 };
 
-type ShowProps = {
-    renderMode: RenderMode;
-    w: number;
-    h: number;
-    ctx: CanvasRenderingContext2D;
-}
 
-const Show = (cell: Cell, fill: string, args: ShowProps): void => {
-    const { ctx, renderMode, h, w } = args;
+const Show = (cell: Cell, fill: string, grid: Grid, ctx: CanvasRenderingContext2D): void => {
+    const { h, w } = grid;
+    const { renderMode } = grid.state;
 
     ctx.beginPath();
     ctx.strokeStyle = 'black';
