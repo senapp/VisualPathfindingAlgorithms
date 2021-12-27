@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { AppState } from '../App';
-import { AlgorithmMode } from '../control/Algorithm';
 import { Grid } from '../control/Grid';
-import { ClearGrid, RenderMode } from '../control/Rendering';
+import { ClearGrid } from '../control/Rendering';
+import { AlgorithmMode, RenderMode } from '../utils/types';
 import { Button } from './common/Button';
 import { Checkbox } from './common/Checkbox';
 import { NumberInput } from './common/NumberInput';

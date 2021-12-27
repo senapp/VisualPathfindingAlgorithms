@@ -1,26 +1,8 @@
+import { CanvasContext, RenderMode } from '../utils/types';
 import { Cell } from './Cell';
 import { Grid } from './Grid';
 
-type ContextCanvas = {
-    ctx: CanvasRenderingContext2D | null;
-    canvas: HTMLCanvasElement | null;
-}
-
-type ShowArgs = {
-    renderMode: RenderMode;
-    w: number;
-    h: number;
-    ctx: CanvasRenderingContext2D;
-}
-
-export enum RenderMode {
-    Square = 0,
-    Circle = 1,
-    Line = 2,
-    None = 3,
-}
-
-export const GetCanvas = (): ContextCanvas => {
+export const GetCanvas = (): CanvasContext => {
     const canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
     if (!canvas) {
         return { ctx: null, canvas: null };
@@ -40,7 +22,7 @@ export const ClearGrid = (grid: Grid, renderMode: RenderMode): void => {
         return;
     }
 
-    const args = { renderMode: renderMode, w: grid.w, h: grid.h, ctx: ctx } as ShowArgs;
+    const args = { renderMode: renderMode, w: grid.w, h: grid.h, ctx: ctx } as ShowProps;
 
     ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 
@@ -73,7 +55,7 @@ export const RenderGrid = (grid: Grid, renderMode: RenderMode): void => {
         return;
     }
 
-    const args = { renderMode: renderMode, w: grid.w, h: grid.h, ctx: ctx } as ShowArgs;
+    const args = { renderMode: renderMode, w: grid.w, h: grid.h, ctx: ctx } as ShowProps;
 
     if (renderMode !== RenderMode.Line) {
         grid.closedset.forEach(cell => {
@@ -114,7 +96,14 @@ const ShowLinePath = (ctx: CanvasRenderingContext2D, grid: Grid): void => {
     ctx.stroke();
 };
 
-const Show = (cell: Cell, fill: string, args: ShowArgs): void => {
+type ShowProps = {
+    renderMode: RenderMode;
+    w: number;
+    h: number;
+    ctx: CanvasRenderingContext2D;
+}
+
+const Show = (cell: Cell, fill: string, args: ShowProps): void => {
     const { ctx, renderMode, h, w } = args;
 
     ctx.beginPath();

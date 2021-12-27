@@ -1,12 +1,7 @@
 import { AppState } from '../App';
 import { Grid } from './Grid';
-import { heuristic, removeElemnentArray as RemoveElementArray } from '../utils/funcs';
+import { heuristic, removeElementArray } from '../utils/funcs';
 import { RenderGrid } from './Rendering';
-
-export enum AlgorithmMode {
-    Astar = 0,
-    Dijkstra = 1
-}
 
 export const AstarRun = (grid: Grid, appState: AppState, onFinish: () => void): void => {
     if (!grid.state.cleared && !grid.state.running) {
@@ -34,7 +29,7 @@ export const AstarRun = (grid: Grid, appState: AppState, onFinish: () => void): 
             onFinish();
         }
 
-        RemoveElementArray(grid.openset, current);
+        removeElementArray(grid.openset, current);
         grid.closedset.push(current);
 
         for (let i = 0; i < current.neighbours.length; i++) {
