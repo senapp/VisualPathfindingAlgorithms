@@ -1,5 +1,6 @@
+import { RenderMode } from '../utils/types';
 import { Cell } from './Cell';
-import { ClearGrid, GetCanvas, RenderMode } from './Rendering';
+import { ClearGrid, GetCanvas } from './Rendering';
 
 export type GridState = {
   ready: boolean;

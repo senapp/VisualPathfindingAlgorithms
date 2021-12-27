@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Grid } from './control/Grid';
 import { CanvasView } from './components/CanvasView';
 import { SettingsView } from './components/SettingsView';
-import { AlgorithmMode, AstarRun } from './control/Algorithm';
+import { AstarRun } from './control/Algorithm';
 import { useRef, useState } from 'react';
-import { RenderMode } from './control/Rendering';
+import { AlgorithmMode, RenderMode } from './utils/types';
 import css from './App.module.css';
 
 export type AppState = {
