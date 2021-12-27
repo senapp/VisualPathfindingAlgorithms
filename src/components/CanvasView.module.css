@@ -1,0 +1,9 @@
+.canvas {
+    border: 5px solid black;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.container {
+    margin-left: 10px;
+}

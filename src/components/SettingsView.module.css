@@ -1,0 +1,37 @@
+.container {
+    margin-left: 10px;
+    margin-bottom: 20px;
+}
+
+.content-container {
+    margin-top: 20px;
+}
+
+.horizontal-container {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.button-bar {
+    display: flex;
+    margin-top: 30px;
+}
+
+.start-button {
+    color: white;
+    background-color: rgb(200 50 50);
+}
+
+.start-button:hover {
+    background-color: rgb(180 30 30);
+}
+
+.clear-button {
+    color: white;
+    background-color: rgb(50 100 210);
+}
+
+.clear-button:hover {
+    background-color: rgb(30 80 190);
+}
