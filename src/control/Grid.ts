@@ -1,4 +1,4 @@
-import { RenderMode } from '../utils/types';
+import { AlgorithmMode, RenderMode } from '../utils/types';
 import { Cell } from './Cell';
 import { ClearGrid, GetCanvas } from './Rendering';
 
@@ -9,6 +9,10 @@ export type GridState = {
   cleared: boolean;
   t0: number;
   t1: number;
+  algorithm: AlgorithmMode;
+  diagonals: boolean;
+  renderMode: RenderMode;
+  alerts: boolean;
 }
 
 export class Grid {
@@ -40,6 +44,10 @@ export class Grid {
             cleared: true,
             t0: 0,
             t1: 0,
+            alerts: true,
+            algorithm: AlgorithmMode.Astar,
+            renderMode: RenderMode.Square,
+            diagonals: true,
         };
     }
 
@@ -60,7 +68,7 @@ export class Grid {
         this.h = height / this.rows;
     }
 
-    public createGrid(_cols: number, _rows: number, wallModifier: number, diagonals: boolean, renderMode: RenderMode): void {
+    public createGrid(_cols: number, _rows: number, wallModifier: number): void {
         this.cells = [];
         this.openset = [];
         this.closedset = [];
@@ -84,7 +92,7 @@ export class Grid {
 
         for (let x = 0; x < this.cols; x++) {
             for (let y = 0; y < this.rows; y++) {
-                this.addNeighboursToCell(this.cells[x][y], diagonals);
+                this.addNeighboursToCell(this.cells[x][y]);
             }
         }
 
@@ -96,10 +104,10 @@ export class Grid {
 
         this.openset.push(this.start);
 
-        ClearGrid(this, renderMode);
+        ClearGrid(this);
     }
 
-    public resetGrid(keepPath: boolean, diagonals: boolean, renderMode: RenderMode): void {
+    public resetGrid(keepPath: boolean): void {
         this.start.wall = false;
         this.end.wall = false;
 
@@ -109,13 +117,13 @@ export class Grid {
             this.openset.push(this.start);
             this.closedset = [];
             this.path = [];
-            this.recalculateCells(diagonals);
+            this.recalculateCells();
         }
 
-        ClearGrid(this, renderMode);
+        ClearGrid(this);
     }
 
-    public recalculateCells(diagonals: boolean): void {
+    public recalculateCells(): void {
         if (this.cols < 1) {
             return;
         }
@@ -128,12 +136,12 @@ export class Grid {
                 this.cells[x][y].x = x;
                 this.cells[x][y].y = y;
                 this.cells[x][y].previous = undefined;
-                this.addNeighboursToCell(this.cells[x][y], diagonals);
+                this.addNeighboursToCell(this.cells[x][y]);
             }
         }
     }
 
-    private addNeighboursToCell(cell: Cell, diagonals: boolean): void {
+    private addNeighboursToCell(cell: Cell): void {
         if (cell.x < this.cols - 1) {
             cell.neighbours.push(this.cells[cell.x + 1][cell.y]);
         }
@@ -147,7 +155,7 @@ export class Grid {
             cell.neighbours.push(this.cells[cell.x][cell.y - 1]);
         }
 
-        if (diagonals) {
+        if (this.state.diagonals) {
             if (cell.y > 0 && cell.x > 0) {
                 cell.neighbours.push(this.cells[cell.x - 1][cell.y - 1]);
             }
