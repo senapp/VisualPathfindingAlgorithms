@@ -29,8 +29,10 @@ export const ClearGrid = (grid: Grid): void => {
         grid.cells.forEach(cellCol => {
             cellCol.forEach(cell => {
                 if (renderMode !== RenderMode.Line) {
-                    if (cell === grid.start || cell === grid.end) {
+                    if (cell === grid.start) {
                         Show(cell, 'yellow', grid, ctx);
+                    } else if (cell === grid.end) {
+                        Show(cell, 'orange', grid, ctx);
                     } else if (cell.wall) {
                         Show(cell, 'black', grid, ctx);
                     } else if (grid.path.includes(cell)) {
@@ -67,12 +69,25 @@ export const RenderGrid = (grid: Grid): void => {
         });
 
         grid.openset.forEach(cell => {
-            Show(cell, 'green', grid, ctx);
+            if (cell.g < Infinity) {
+                Show(cell, 'green', grid, ctx);
+            } else {
+                Show(cell, 'rgb(201 254 204)', grid, ctx);
+            }
         });
 
         grid.path.forEach(cell => {
             Show(cell, 'blue', grid, ctx);
         });
+
+        grid.cells.forEach(cellCol => {
+            cellCol.forEach(cell => {
+                if (cell === grid.start) {
+                    Show(cell, 'yellow', grid, ctx);
+                } else if (cell === grid.end) {
+                    Show(cell, 'orange', grid, ctx);
+                } })
+            });
     } else {
         ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 
