@@ -1,4 +1,4 @@
-import { AlgorithmMode, RenderMode } from '../utils/types';
+import { AlgorithmMode, HeuristicAlgorithmMode, RenderMode } from '../utils/types';
 import { Cell } from './Cell';
 import { ClearGrid, GetCanvas } from './Rendering';
 
@@ -9,10 +9,13 @@ export type GridState = {
   cleared: boolean;
   t0: number;
   t1: number;
+  heuristicAlgorithm: HeuristicAlgorithmMode;
   algorithm: AlgorithmMode;
   diagonals: boolean;
   renderMode: RenderMode;
   alerts: boolean;
+  customInit: boolean;
+  success: boolean;
 }
 
 export class Grid {
@@ -46,8 +49,11 @@ export class Grid {
             t1: 0,
             alerts: true,
             algorithm: AlgorithmMode.Astar,
+            heuristicAlgorithm: HeuristicAlgorithmMode.Euclidean,
             renderMode: RenderMode.Square,
             diagonals: true,
+            customInit: false,
+            success: false,
         };
     }
 
@@ -110,8 +116,10 @@ export class Grid {
     public resetGrid(keepPath: boolean): void {
         this.start.wall = false;
         this.end.wall = false;
-
+        
         if (!keepPath) {
+            this.state.customInit = false;
+            this.state.success = false;
             this.cleared = true;
             this.openset = [];
             this.openset.push(this.start);

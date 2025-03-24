@@ -2,8 +2,8 @@ import * as React from 'react';
 import { Grid } from './control/Grid';
 import { CanvasView } from './components/CanvasView';
 import { SettingsView } from './components/SettingsView';
-import { AstarRun } from './control/Algorithm';
-import { useRef } from 'react';
+import { AstarRun, BFSRun, DijkstraRun } from './control/Algorithm';
+import { useReducer, useRef } from 'react';
 import { AlgorithmMode } from './utils/types';
 import css from './App.module.css';
 
@@ -11,9 +11,7 @@ export const App: React.FC = () => {
     const interval = useRef<NodeJS.Timer | undefined>(undefined);
     const grid = useRef<Grid>(new Grid());
 
-    const onDijkstraRun = (): void => {
-        // TODO add
-    };
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const onRun = (): void => {
         switch (grid.current.state.algorithm) {
@@ -21,7 +19,10 @@ export const App: React.FC = () => {
                 AstarRun(grid.current, onFinish);
                 break;
             case AlgorithmMode.Dijkstra:
-                onDijkstraRun();
+                DijkstraRun(grid.current, onFinish);
+                break;
+            case AlgorithmMode.BFS:
+                BFSRun(grid.current, onFinish);
                 break;
         }
     };
@@ -29,6 +30,7 @@ export const App: React.FC = () => {
     const onFinish = (): void => {
         if (interval.current) {
             clearInterval(interval.current);
+            forceUpdate();
         }
     };
 
