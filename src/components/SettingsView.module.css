@@ -19,6 +19,8 @@
 .button-bar {
     display: flex;
     margin-top: 30px;
+    flex-flow: wrap;
+    gap: 10px;
 }
 
 .start-button {

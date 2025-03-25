@@ -14,10 +14,6 @@
     cursor: pointer;
 }
 
-.button:not(:last-child) {
-    margin-right: 5px;
-}
-
 .small-button {
     min-width: 60px;
     min-height: 20px;

@@ -23,7 +23,7 @@ type State = {
 export const SettingsView: React.FC<Props> = ({ grid, onBegin }) => {
     const { diagonals, renderMode, heuristicAlgorithm, algorithm, alerts } = grid.state;
     const [state, setState] = useState<State>({
-        canvasSize: 600,
+        canvasSize: 400,
         wallModifier: 0.3,
         colsAndRows: 30,
         grid: grid,
